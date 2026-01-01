@@ -43,7 +43,7 @@
                   pstree
                 ];
                 postBuild = ''
-                  wrapProgram $out/bin/bat --add-flags "--theme 1337 --style header
+                  wrapProgram $out/bin/bat --add-flags "--theme 1337 --style header"
                   wrapProgram $out/bin/fish --add-flags "--init-command 'fish_config theme choose Bay\ Cruise'" 
                   wrapProgram $out/bin/tmux --add-flags "-f ${./config/tmux.conf} -L clix"
                                      
