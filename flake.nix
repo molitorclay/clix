@@ -34,6 +34,7 @@
         in
         {
           packages = {
+            inherit tsplit;
             default = (
               pkgs.symlinkJoin {
                 name = "clix";
