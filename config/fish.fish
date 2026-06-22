@@ -36,3 +36,4 @@ set --global _tide_right_items status cmd_duration context jobs nix_shell time
 alias vim nvim
 alias vi nvim
 alias cat bat
+alias nb "nix flake update clix --flake ~/nixconf/ && sudo nixos-rebuild switch --flake ~/nixconf/"
