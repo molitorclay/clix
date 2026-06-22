@@ -63,12 +63,11 @@
           };
           clix-tmux = pkgs.symlinkJoin {
             name = "clix-tmux";
-            paths = with pkgs; [ tmux tmuxPlugins.better-mouse-mode fish ];
+            paths = with pkgs; [ tmux tmuxPlugins.better-mouse-mode fish fishPlugins.tide ];
             buildInputs = [ pkgs.makeWrapper ];
             postBuild = ''
               wrapProgram $out/bin/fish \
-                --add-flags "--init-command 'fish_config theme choose Bay\ Cruise'" \
-                --add-flags "--init-command 'source ${./config/aliases.fish}'"
+                --add-flags "--init-command 'source ${./config/fish.fish}'"
               wrapProgram $out/bin/tmux \
                 --add-flags "-f ${./config/tmux.conf} -L clix" \
                 --set SHELL "$out/bin/fish"
