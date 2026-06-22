@@ -50,6 +50,7 @@
                 lua << EOF
                 vim.opt.number = true
                 vim.opt.relativenumber = true
+                vim.opt.signcolumn = "yes"
 
                 vim.lsp.config('nixd', {
                   cmd = { 'nixd' },
