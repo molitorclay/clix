@@ -107,7 +107,7 @@
             paths = [ pkgs.bat ];
             buildInputs = [ pkgs.makeWrapper ];
             postBuild = ''
-              wrapProgram $out/bin/bat --add-flags "--theme 1337 --style header"
+              wrapProgram $out/bin/bat --add-flags "--theme 1337 --style plain --paging never"
             '';
           };
           clix-tmux = pkgs.symlinkJoin {
