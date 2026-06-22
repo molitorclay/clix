@@ -102,10 +102,18 @@
             name = "clix-vim";
             paths = [ clix-neovim ] ++ lsp-servers;
           };
+          clix-bat = pkgs.symlinkJoin {
+            name = "clix-bat";
+            paths = [ pkgs.bat ];
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/bat --add-flags "--theme 1337 --style header"
+            '';
+          };
         in
         {
           packages = {
-            inherit tsplit clix-vim;
+            inherit tsplit clix-vim clix-bat;
             default = (
               pkgs.symlinkJoin {
                 name = "clix";
@@ -117,16 +125,14 @@
                     nushell
                     tmux
                     tmuxPlugins.better-mouse-mode
-                    bat
                     broot
                     tree
                     pstree
                     tsplit
                   ]
-                  ++ [ clix-vim ];
+                  ++ [ clix-vim clix-bat ];
                 postBuild = ''
                   wrapProgram $out/bin/fish --add-flags "--init-command 'fish_config theme choose Bay\ Cruise'"
-                  wrapProgram $out/bin/bat --add-flags "--theme 1337 --style header"
                   wrapProgram $out/bin/tmux \
                     --add-flags "-f ${./config/tmux.conf} -L clix" \
                     --set SHELL "$out/bin/fish"
