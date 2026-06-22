@@ -61,22 +61,30 @@
               wrapProgram $out/bin/bat --add-flags "--theme 1337 --style plain --paging never"
             '';
           };
-          clix-tmux = pkgs.symlinkJoin {
-            name = "clix-tmux";
-            paths = with pkgs; [ tmux tmuxPlugins.better-mouse-mode fish fishPlugins.tide ];
+          clix-fish = pkgs.symlinkJoin {
+            name = "clix-fish";
+            paths = with pkgs; [ fish fishPlugins.tide ];
             buildInputs = [ pkgs.makeWrapper ];
             postBuild = ''
               wrapProgram $out/bin/fish \
                 --add-flags "--init-command 'source ${./config/fish.fish}'"
+            '';
+            passthru.shellPath = "/bin/fish";
+          };
+          clix-tmux = pkgs.symlinkJoin {
+            name = "clix-tmux";
+            paths = with pkgs; [ tmux tmuxPlugins.better-mouse-mode ] ++ [ clix-fish ];
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
               wrapProgram $out/bin/tmux \
                 --add-flags "-f ${./config/tmux.conf} -L clix" \
-                --set SHELL "$out/bin/fish"
+                --set SHELL "${clix-fish}/bin/fish"
             '';
           };
         in
         {
           packages = {
-            inherit tsplit clix-vim clix-bat clix-tmux;
+            inherit tsplit clix-vim clix-bat clix-fish clix-tmux;
             default = (
               pkgs.symlinkJoin {
                 name = "clix";
