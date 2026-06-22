@@ -51,6 +51,11 @@
                 vim.opt.number = true
                 vim.opt.relativenumber = true
                 vim.opt.signcolumn = "yes"
+                vim.opt.tabstop = 2
+                vim.opt.shiftwidth = 2
+                vim.opt.expandtab = true
+                vim.api.nvim_set_hl(0, 'TrailingWhitespace', { bg = '#550000' })
+                vim.fn.matchadd('TrailingWhitespace', '\\s\\+$')
 
                 vim.lsp.config('nixd', {
                   cmd = { 'nixd' },
