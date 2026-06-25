@@ -63,12 +63,13 @@
           };
           clix-fish = pkgs.symlinkJoin {
             name = "clix-fish";
-            paths = with pkgs; [ fish fishPlugins.tide ];
-            buildInputs = [ pkgs.makeWrapper ];
-            postBuild = ''
-              wrapProgram $out/bin/fish \
-                --add-flags "--init-command 'source ${./config/fish.fish}'"
-            '';
+            paths = [
+              (pkgs.writeShellScriptBin "fish" ''
+                exec ${pkgs.fish}/bin/fish --init-command "source ${./config/fish.fish}" "$@"
+              '')
+              pkgs.fish
+              pkgs.fishPlugins.tide
+            ];
             passthru.shellPath = "/bin/fish";
           };
           clix-tmux = pkgs.symlinkJoin {
