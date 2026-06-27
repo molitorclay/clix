@@ -20,3 +20,11 @@ alias vim nvim
 alias vi nvim
 alias cat bat
 alias nb "nix flake update clix --flake ~/nixconf/ && sudo nixos-rebuild switch --flake ~/nixconf/"
+
+function ns
+    nix shell nixpkgs#{ $argv }
+end
+
+function nr
+    nix run nixpkgs#{ $argv }
+end

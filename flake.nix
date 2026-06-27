@@ -84,26 +84,29 @@
           };
         in
         {
+          apps.default = {
+            type = "app";
+            program = "${clix-fish}/bin/fish";
+          };
+
           packages = {
             inherit tsplit clix-vim clix-bat clix-fish clix-tmux;
-            default = (
-              pkgs.symlinkJoin {
-                name = "clix";
-                buildInputs = [ pkgs.makeWrapper ];
-                paths =
-                  with pkgs;
-                  [
-                    nushell
-                    broot
-                    tree
-                    pstree
-                    tsplit
-                  ]
-                  ++ [ clix-vim clix-bat clix-tmux ];
-                postBuild = ''
-                '';
-              }
-            );
+            default = pkgs.symlinkJoin {
+              name = "clix";
+              buildInputs = [ pkgs.makeWrapper ];
+              paths =
+                with pkgs;
+                [
+                  broot
+                  tree
+                  pstree
+                  tsplit
+                ]
+                ++ [ clix-vim clix-bat clix-tmux ];
+              postBuild = ''
+              '';
+              passthru.shellPath = clix-fish.shellPath;
+            };
           };
         };
     };
