@@ -29,7 +29,7 @@
               echo "tsplit: not inside a tmux session" >&2
               exit 1
             fi
-            tmux split-window -h \; split-window -v \; send-keys -t 2 'nix run nixpkgs#fastfetch -- --logo NixOS --logo-color-1 "#FF0018" --logo-color-2 "#FF8C00" --logo-color-3 "#FFFF41" --logo-color-4 "#008018" --logo-color-5 "#0000F9" --logo-color-6 "#86007D"' C-m \; resize-pane -t 2 -y 31
+            tmux split-window -h \; split-window -v \; send-keys -t 2 'fastfetch' C-m \; resize-pane -t 2 -y 31
           '';
           lsp-servers = with pkgs; [
             nixd
