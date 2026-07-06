@@ -72,6 +72,16 @@
             ];
             passthru.shellPath = "/bin/fish";
           };
+          clix-git = pkgs.symlinkJoin {
+            name = "clix-git";
+            paths = [
+              (pkgs.writeShellScriptBin "git" ''
+                exec ${pkgs.git}/bin/git -c include.path=${./config/gitconfig} "$@"
+              '')
+              pkgs.git
+              pkgs.delta
+            ];
+          };
           clix-tmux = pkgs.symlinkJoin {
             name = "clix-tmux";
             paths =
@@ -100,6 +110,7 @@
               clix-vim
               clix-bat
               clix-fish
+              clix-git
               clix-tmux
               ;
             default = pkgs.symlinkJoin {
@@ -118,9 +129,10 @@
                 ++ [
                   clix-vim
                   clix-bat
+                  clix-git
                   clix-tmux
                 ];
-              postBuild = '''';
+              postBuild = "";
               passthru.shellPath = clix-fish.shellPath;
             };
           };
