@@ -74,7 +74,13 @@
           };
           clix-tmux = pkgs.symlinkJoin {
             name = "clix-tmux";
-            paths = with pkgs; [ tmux tmuxPlugins.better-mouse-mode ] ++ [ clix-fish ];
+            paths =
+              with pkgs;
+              [
+                tmux
+                tmuxPlugins.better-mouse-mode
+              ]
+              ++ [ clix-fish ];
             buildInputs = [ pkgs.makeWrapper ];
             postBuild = ''
               wrapProgram $out/bin/tmux \
@@ -88,9 +94,14 @@
             type = "app";
             program = "${clix-fish}/bin/fish";
           };
-
           packages = {
-            inherit tsplit clix-vim clix-bat clix-fish clix-tmux;
+            inherit
+              tsplit
+              clix-vim
+              clix-bat
+              clix-fish
+              clix-tmux
+              ;
             default = pkgs.symlinkJoin {
               name = "clix";
               buildInputs = [ pkgs.makeWrapper ];
@@ -98,13 +109,18 @@
                 with pkgs;
                 [
                   broot
-                  tree
+                  eza
+                  ripgrep
+                  fd
                   pstree
                   tsplit
                 ]
-                ++ [ clix-vim clix-bat clix-tmux ];
-              postBuild = ''
-              '';
+                ++ [
+                  clix-vim
+                  clix-bat
+                  clix-tmux
+                ];
+              postBuild = '''';
               passthru.shellPath = clix-fish.shellPath;
             };
           };
