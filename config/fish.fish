@@ -29,9 +29,9 @@ alias nb "nix flake update clix --flake ~/nixconf/ && sudo nixos-rebuild switch 
 alias fastfetch 'nix run nixpkgs#fastfetch -- --logo NixOS --logo-color-1 "#FF0018" --logo-color-2 "#FF8C00" --logo-color-3 "#FFFF41" --logo-color-4 "#008018" --logo-color-5 "#0000F9" --logo-color-6 "#86007D"'
 
 function ns
-    nix shell nixpkgs#{ $argv }
+    nix shell nixpkgs#{ $argv } --impure
 end
 
 function nr
-    nix run nixpkgs#$argv
+    nix run nixpkgs#$argv  --impure
 end
