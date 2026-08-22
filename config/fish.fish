@@ -16,6 +16,7 @@ if not set -q _tide_left_items
 end
 
 # Aliases
+set -gx EDITOR nvim
 alias vim nvim
 alias vi nvim
 alias cat bat
