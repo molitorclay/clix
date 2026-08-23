@@ -28,6 +28,8 @@ alias grep ripgrep
 alias nb "nix flake update clix --flake ~/nixconf/ && sudo nixos-rebuild switch --flake ~/nixconf/"
 alias fastfetch 'nix run nixpkgs#fastfetch -- --logo NixOS --logo-color-1 "#FF0018" --logo-color-2 "#FF8C00" --logo-color-3 "#FFFF41" --logo-color-4 "#008018" --logo-color-5 "#0000F9" --logo-color-6 "#86007D"'
 
+direnv hook fish | source
+
 function ns
     NIXPKGS_ALLOW_UNFREE=1 nix shell --impure nixpkgs#{ $argv }
 end
