@@ -58,6 +58,10 @@
             name = "clix-vim";
             paths = [ clix-neovim ] ++ lsp-servers;
           };
+          clix-vim-light = pkgs.symlinkJoin {
+            name = "clix-vim-light";
+            paths = [ clix-neovim ];
+          };
           clix-bat = pkgs.symlinkJoin {
             name = "clix-bat";
             paths = [ pkgs.bat ];
@@ -88,19 +92,22 @@
               pkgs.delta
             ];
           };
+          tmux-plugins = with pkgs.tmuxPlugins; [
+            better-mouse-mode
+            yank
+            tmux-powerline
+          ];
+          clix-tmux-conf = pkgs.writeText "tmux.conf" ''
+            ${builtins.readFile ./config/tmux.conf}
+            ${pkgs.lib.concatMapStrings (p: "run-shell ${p.rtp}\n") tmux-plugins}
+          '';
           clix-tmux = pkgs.symlinkJoin {
             name = "clix-tmux";
-            paths =
-              with pkgs;
-              [
-                tmux
-                tmuxPlugins.better-mouse-mode
-              ]
-              ++ [ clix-fish ];
+            paths = [ pkgs.tmux ] ++ tmux-plugins ++ [ clix-fish ];
             buildInputs = [ pkgs.makeWrapper ];
             postBuild = ''
               wrapProgram $out/bin/tmux \
-                --add-flags "-f ${./config/tmux.conf} -L clix" \
+                --add-flags "-f ${clix-tmux-conf} -L clix" \
                 --set SHELL "${clix-fish}/bin/fish"
             '';
           };
@@ -110,38 +117,45 @@
             type = "app";
             program = "${clix-fish}/bin/fish";
           };
-          packages = {
-            inherit
-              tsplit
-              clix-vim
-              clix-bat
-              clix-fish
-              clix-git
-              clix-tmux
-              ;
-            default = pkgs.symlinkJoin {
-              name = "clix";
-              buildInputs = [ pkgs.makeWrapper ];
-              paths =
-                with pkgs;
-                [
-                  broot
-                  eza
-                  ripgrep
-                  fd
-                  pstree
-                  tsplit
-                ]
-                ++ [
-                  clix-vim
-                  clix-bat
-                  clix-git
-                  clix-tmux
-                ];
-              postBuild = "";
-              passthru.shellPath = clix-fish.shellPath;
+          packages =
+            let
+              commonPaths = with pkgs; [
+                broot
+                eza
+                ripgrep
+                fd
+                pstree
+                tsplit
+                clix-bat
+                clix-git
+                clix-tmux
+              ];
+            in
+            {
+              inherit
+                tsplit
+                clix-vim
+                clix-vim-light
+                clix-bat
+                clix-fish
+                clix-git
+                clix-tmux
+                ;
+              default = pkgs.symlinkJoin {
+                name = "clix";
+                buildInputs = [ pkgs.makeWrapper ];
+                paths = commonPaths ++ [ clix-vim ];
+                postBuild = "";
+                passthru.shellPath = clix-fish.shellPath;
+              };
+              light = pkgs.symlinkJoin {
+                name = "clix-light";
+                buildInputs = [ pkgs.makeWrapper ];
+                paths = commonPaths ++ [ clix-vim-light ];
+                postBuild = "";
+                passthru.shellPath = clix-fish.shellPath;
+              };
             };
-          };
         };
     };
 }
