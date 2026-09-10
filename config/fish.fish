@@ -24,8 +24,10 @@ alias ls eza
 alias tree 'eza --tree -I ".git"'
 alias grep rg
 
+source (dirname (status filename))/claude.fish
+
 # nix aliases
-alias nb "sudo nixos-rebuild switch --flake path:/home/clay/nixconf --impure"
+alias nb "sudo nixos-rebuild switch --flake git+file://$HOME/nixconf?submodules=1"
 alias fastfetch 'nix run nixpkgs#fastfetch -- --logo NixOS --logo-color-1 "#FF0018" --logo-color-2 "#FF8C00" --logo-color-3 "#FFFF41" --logo-color-4 "#008018" --logo-color-5 "#0000F9" --logo-color-6 "#86007D"'
 
 direnv hook fish | source

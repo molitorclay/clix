@@ -29,7 +29,12 @@
               echo "tsplit: not inside a tmux session" >&2
               exit 1
             fi
-            tmux split-window -h \; split-window -v \; send-keys -t 2 'fastfetch' C-m \; resize-pane -t 2 -y 31
+            if [ -n "$1" ]; then
+              name="$1"
+            else
+              name="$(basename "$PWD")"
+            fi
+            tmux rename-window "$name" \; split-window -h \; split-window -v \; send-keys -t 2 'fastfetch' C-m \; resize-pane -t 2 -y 31
           '';
           lsp-servers = with pkgs; [
             nixd
@@ -65,10 +70,11 @@
             name = "clix-fish";
             paths = [
               (pkgs.writeShellScriptBin "fish" ''
-                exec ${pkgs.fish}/bin/fish --init-command "source ${./config/fish.fish}" "$@"
+                exec ${pkgs.fish}/bin/fish --init-command "source ${./config}/fish.fish" "$@"
               '')
               pkgs.fish
               pkgs.fishPlugins.tide
+              pkgs.fishPlugins.z
             ];
             passthru.shellPath = "/bin/fish";
           };
