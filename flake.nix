@@ -93,10 +93,10 @@
             better-mouse-mode
             yank
           ];
-          sysbar = pkgs.writeShellScript "sysbar" (builtins.readFile ./config/sysbar.sh);
+          sysbar = pkgs.writeShellScript "tmux-status" (builtins.readFile ./config/tmux-status.sh);
           clix-tmux-conf = pkgs.writeText "tmux.conf" ''
             ${builtins.readFile ./config/tmux.conf}
-            set -g status-right "#(${sysbar}) | %H:%M"
+            set -g status-right "#(${sysbar}) | %H:%M %a %d %b %Y"
             set -g status-interval 2
             ${pkgs.lib.concatMapStrings (p: "run-shell ${p.rtp}\n") tmux-plugins}
           '';
