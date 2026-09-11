@@ -117,6 +117,10 @@
             type = "app";
             program = "${clix-fish}/bin/fish";
           };
+          apps.light = {
+            type = "app";
+            program = "${clix-fish}/bin/fish";
+          };
           packages =
             let
               commonPaths = with pkgs; [
