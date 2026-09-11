@@ -92,13 +92,12 @@
           tmux-plugins = with pkgs.tmuxPlugins; [
             better-mouse-mode
             yank
-            tmux-powerline
           ];
-          powerlineScript = "${pkgs.tmuxPlugins.tmux-powerline}/share/tmux-plugins/tmux-powerline/powerline.sh";
+          sysbar = pkgs.writeShellScript "sysbar" (builtins.readFile ./config/sysbar.sh);
           clix-tmux-conf = pkgs.writeText "tmux.conf" ''
             ${builtins.readFile ./config/tmux.conf}
-            set -g status2-left  "#(${powerlineScript} left)"
-            set -g status2-right "#(${powerlineScript} right)"
+            set -g status-right "#(${sysbar}) | %H:%M"
+            set -g status-interval 2
             ${pkgs.lib.concatMapStrings (p: "run-shell ${p.rtp}\n") tmux-plugins}
           '';
           clix-tmux = pkgs.symlinkJoin {
@@ -109,7 +108,6 @@
               wrapProgram $out/bin/tmux \
                 --add-flags "-f ${clix-tmux-conf} -L clix" \
                 --set SHELL "${clix-fish}/bin/fish" \
-                --set TMUX_POWERLINE_CONFIG_FILE "${./config/powerline-config.sh}"
             '';
           };
         in
