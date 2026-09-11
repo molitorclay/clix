@@ -39,3 +39,11 @@ end
 function nr
     NIXPKGS_ALLOW_UNFREE=1 nix run --impure nixpkgs#$argv[1] -- $argv[2..]
 end
+
+function __nr_packages
+    nix search nixpkgs 2>/dev/null \
+        | sed 's/\x1b\[[0-9;]*m//g' \
+        | awk '/^\* /{split($2,a,".");n=a[length(a)]} /^  /{if(n){print n"\t"substr($0,3);n=""}}'
+end
+complete -c nr -f -a '(__nr_packages)'
+complete -c ns -f -a '(__nr_packages)'
