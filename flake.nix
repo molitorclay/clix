@@ -94,8 +94,11 @@
             yank
             tmux-powerline
           ];
+          powerlineScript = "${pkgs.tmuxPlugins.tmux-powerline}/share/tmux-plugins/tmux-powerline/powerline.sh";
           clix-tmux-conf = pkgs.writeText "tmux.conf" ''
             ${builtins.readFile ./config/tmux.conf}
+            set -g status2-left  "#(${powerlineScript} left)"
+            set -g status2-right "#(${powerlineScript} right)"
             ${pkgs.lib.concatMapStrings (p: "run-shell ${p.rtp}\n") tmux-plugins}
           '';
           clix-tmux = pkgs.symlinkJoin {
@@ -105,7 +108,8 @@
             postBuild = ''
               wrapProgram $out/bin/tmux \
                 --add-flags "-f ${clix-tmux-conf} -L clix" \
-                --set SHELL "${clix-fish}/bin/fish"
+                --set SHELL "${clix-fish}/bin/fish" \
+                --set TMUX_POWERLINE_CONFIG_FILE "${./config/powerline-config.sh}"
             '';
           };
         in
