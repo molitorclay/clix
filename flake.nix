@@ -97,6 +97,7 @@
           clix-tmux-conf = pkgs.writeText "tmux.conf" ''
             ${builtins.readFile ./config/tmux.conf}
             set -g status-right "#(${sysbar}) | %H:%M %a %d %b %Y"
+            set -g status-right-length 100
             set -g status-interval 2
             ${pkgs.lib.concatMapStrings (p: "run-shell ${p.rtp}\n") tmux-plugins}
           '';
