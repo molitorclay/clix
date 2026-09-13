@@ -47,3 +47,11 @@ function __nr_packages
 end
 complete -c nr -f -a '(__nr_packages)'
 complete -c ns -f -a '(__nr_packages)'
+
+# function fish_command_not_found
+#     set -l cmd $argv[1]
+#     set -l args $argv[2..-1]
+#     if not NIXPKGS_ALLOW_UNFREE=1 nix run --impure nixpkgs#$cmd -- $args
+#         echo "fish: Unknown command: $cmd"
+#     end
+# end

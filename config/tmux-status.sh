@@ -2,7 +2,10 @@
 blocks='▁▂▃▄▅▆▇█'
 
 mem_pct=$(awk '/^MemTotal:/{t=$2} /^MemAvailable:/{a=$2} END{print int((1-a/t)*100)}' /proc/meminfo)
-cpu_pct=$(awk '/^cpu / {idle=$5+$6; total=0; for(i=2;i<=NF;i++) total+=$i; print int((1-idle/total)*100)}' /proc/stat)
+# /proc/stat only exposes cumulative-since-boot counters, so sample twice and take the delta.
+read_cpu() { awk '/^cpu / {t=0; for(i=2;i<=NF;i++) t+=$i; print t, $5+$6; exit}' /proc/stat; }
+read t1 i1 < <(read_cpu); sleep 0.3; read t2 i2 < <(read_cpu)
+cpu_pct=$(( (t2-t1) > 0 ? 100 - (i2-i1)*100/(t2-t1) : 0 ))
 
 ai_cache="${XDG_RUNTIME_DIR:-/tmp}/claude-usage.cache"
 if [ ! -f "$ai_cache" ] || [ $(( $(date +%s) - $(stat -c %Y "$ai_cache") )) -gt 120 ]; then
