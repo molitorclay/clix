@@ -8,21 +8,34 @@ read t1 i1 < <(read_cpu); sleep 0.3; read t2 i2 < <(read_cpu)
 cpu_pct=$(( (t2-t1) > 0 ? 100 - (i2-i1)*100/(t2-t1) : 0 ))
 
 ai_cache="${XDG_RUNTIME_DIR:-/tmp}/claude-usage.cache"
-if [ ! -f "$ai_cache" ] || [ $(( $(date +%s) - $(stat -c %Y "$ai_cache") )) -gt 120 ]; then
-  token=$(grep -o '"accessToken":"[^"]*"' ~/.claude/.credentials.json | sed 's/"accessToken":"//;s/"//')
-  curl -s \
-    -H 'Accept: application/json' \
-    -H "Authorization: Bearer $token" \
-    -H 'anthropic-beta: oauth-2025-04-20' \
-    -H 'User-Agent: claude-cli/2.1.148 (external, cli)' \
-    https://api.anthropic.com/api/oauth/usage \
-  | sed 's/.*"limits":\[//;s/\],"spend".*//' \
-  | tr ',' '\n' \
-  | sed -n 's/.*"percent":\([0-9][0-9]*\).*/\1/p' \
-  | head -2 > "$ai_cache" 2>/dev/null
+creds=~/.claude/.credentials.json
+ai_available=0
+if [ -f "$creds" ]; then
+  expires_ms=$(grep -o '"expiresAt":[0-9]*' "$creds" | grep -o '[0-9]*')
+  now_ms=$(( $(date +%s) * 1000 ))
+  if [ -n "$expires_ms" ] && [ "$expires_ms" -gt "$now_ms" ]; then
+    ai_available=1
+  fi
 fi
-ai_session=$(sed -n '1p' "$ai_cache" 2>/dev/null || echo 0)
-ai_weekly=$(sed -n '2p' "$ai_cache" 2>/dev/null || echo 0)
+
+if [ "$ai_available" = 1 ]; then
+  if [ ! -f "$ai_cache" ] || [ $(( $(date +%s) - $(stat -c %Y "$ai_cache") )) -gt 120 ]; then
+    token=$(grep -o '"accessToken":"[^"]*"' "$creds" | sed 's/"accessToken":"//;s/"//')
+    curl -s \
+      -H 'Accept: application/json' \
+      -H "Authorization: Bearer $token" \
+      -H 'anthropic-beta: oauth-2025-04-20' \
+      -H 'User-Agent: claude-cli/2.1.148 (external, cli)' \
+      https://api.anthropic.com/api/oauth/usage \
+    | sed 's/.*"limits":\[//;s/\],"spend".*//' \
+    | tr ',' '\n' \
+    | sed -n 's/.*"percent":\([0-9][0-9]*\).*/\1/p' \
+    | head -2 > "$ai_cache" 2>/dev/null
+  fi
+  ai_session=$(sed -n '1p' "$ai_cache" 2>/dev/null)
+  ai_weekly=$(sed -n '2p' "$ai_cache" 2>/dev/null)
+  [ -z "$ai_session" ] && ai_available=0
+fi
 
 bar() {
   local pct=$1
@@ -48,4 +61,8 @@ ai_bar() {
   fi
 }
 
-echo "MEM: $(bar $mem_pct)  CPU: $(bar $cpu_pct)  AI: $(ai_bar $ai_session)$(ai_bar $ai_weekly)"
+out="MEM: $(bar $mem_pct)  CPU: $(bar $cpu_pct)"
+if [ "$ai_available" = 1 ]; then
+  out="$out  AI: $(ai_bar $ai_session)$(ai_bar $ai_weekly)"
+fi
+echo "$out"
