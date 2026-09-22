@@ -92,6 +92,8 @@
           tmux-plugins = with pkgs.tmuxPlugins; [
             better-mouse-mode
             yank
+            resurrect
+            continuum
           ];
           sysbar = pkgs.writeShellScript "tmux-status" (builtins.readFile ./config/tmux-status.sh);
           clix-tmux-conf = pkgs.writeText "tmux.conf" ''
